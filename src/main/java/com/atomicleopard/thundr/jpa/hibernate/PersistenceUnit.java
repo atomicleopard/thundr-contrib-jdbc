@@ -24,7 +24,13 @@ public class PersistenceUnit {
 	protected Class<? extends Interceptor> sessionInterceptorClass;
 	protected List<Class<? extends AttributeConverter<?, ?>>> convertors = new ArrayList<>();
 
-	// TODO - Dialect should be totally derivable from all known datasources
+	//Hibernate resolves Dialect automatically for common databases
+	public PersistenceUnit(DataSource dataSource) {
+		super();
+		this.dataSource = dataSource;
+	}
+
+	//Use if you need to override the results returned by Hibernate's default Dialect Resolver
 	public PersistenceUnit(DataSource dataSource, Dialect dialect) {
 		super();
 		this.dataSource = dataSource;

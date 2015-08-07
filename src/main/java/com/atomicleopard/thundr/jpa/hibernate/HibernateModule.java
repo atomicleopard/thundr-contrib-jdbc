@@ -11,6 +11,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 import org.hibernate.service.ServiceRegistry;
 
@@ -40,12 +41,16 @@ public class HibernateModule extends BaseModule {
 		for (Class<?> entityClass : unit.getEntityClasses()) {
 			configuration.addAnnotatedClass(entityClass);
 		}
-		for (Class<? extends AttributeConverter<?, ?>> convertor : unit.getAttributeConvertors()) {
-			configuration.addAttributeConverter(convertor);
+		for (Class<? extends AttributeConverter<?, ?>> converter : unit.getAttributeConvertors()) {
+			configuration.addAttributeConverter(converter);
 		}
 		Properties cfgProperties = configuration.getProperties();
 		cfgProperties.put(Environment.DATASOURCE, unit.getDataSource());
-		cfgProperties.put(Environment.DIALECT, unit.getDialect());
+
+		Dialect dialect = unit.getDialect();
+		if (dialect != null) {
+			cfgProperties.put(Environment.DIALECT, unit.getDialect());
+		}
 
 		StandardServiceRegistry serviceRegistry = createServiceRegistry(configuration);
 		SessionFactory sessionFactory = createSessionFactory(configuration, serviceRegistry);
