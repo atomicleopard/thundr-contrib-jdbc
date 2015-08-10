@@ -5,7 +5,7 @@ import com.threewks.thundr.injection.InjectionContextImpl;
 import com.threewks.thundr.injection.UpdatableInjectionContext;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.hibernate.cfg.Environment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +24,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class HibernateModuleIntegrationTest {
 
     public static final String CUST_NAME = "cust_name";
-    public static final String JDBC_URL = "jdbc:hsqldb:mem:test;user=sa;password=";
+    public static final String JDBC_URL = "jdbc:hsqldb:mem";
     Connection connection = null;
     private UpdatableInjectionContext injectionContext = new InjectionContextImpl();
     private HibernateModule hibernateModule = null;
     private HsqlDbModule hsqlDbModule = null;
-    PersistenceUnit persistenceUnit = null;
+    HibernateConfig hibernateConfig = null;
     SessionFactory sessionFactory = null;
     Session session = null;
     EntityManagerFactory entityManagerFactory = null;
@@ -43,14 +43,16 @@ public class HibernateModuleIntegrationTest {
         hsqlDbModule = new HsqlDbModule();
         hsqlDbModule.configure(injectionContext);
         DataSource dataSource = injectionContext.get(DataSource.class);
-        persistenceUnit = new PersistenceUnit(dataSource)
-                .withEntity(Customer.class);
-        injectionContext.inject(persistenceUnit).as(PersistenceUnit.class);
+        hibernateConfig = new HibernateConfig(dataSource)
+                .withEntity(Customer.class)
+                .withProperty(Environment.HBM2DDL_AUTO, "create-drop");
+        injectionContext.inject(hibernateConfig).as(HibernateConfig.class);
         hibernateModule = new HibernateModule();
         hibernateModule.start(injectionContext);
 
         customer = new Customer();
         customer.setName(CUST_NAME);
+
     }
 
     @Test
