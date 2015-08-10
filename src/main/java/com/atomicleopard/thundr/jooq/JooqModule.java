@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 import com.atomicleopard.thundr.jdbc.JdbcModule;
 import com.threewks.thundr.configuration.ConfigurationException;
@@ -49,8 +48,7 @@ public class JooqModule extends BaseModule {
 		if (sqlDialect == null) {
 			throw new ConfigurationException("JOOQ SQLDialect is unknown, please specify the name using the property '%s'", PropertyJooqDialect);
 		}
-		DSLContext dsl = DSL.using(datasource, sqlDialect);
-		Jooq jooq = new Jooq(dsl);
+		Jooq jooq = new Jooq(datasource, sqlDialect);
 		injectionContext.inject(jooq).as(DSLContext.class);
 		injectionContext.inject(jooq).as(Jooq.class);
 	}

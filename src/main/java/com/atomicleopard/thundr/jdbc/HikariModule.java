@@ -20,6 +20,7 @@ package com.atomicleopard.thundr.jdbc;
 import javax.sql.DataSource;
 
 import com.threewks.thundr.injection.BaseModule;
+import com.threewks.thundr.injection.InjectionContext;
 import com.threewks.thundr.injection.UpdatableInjectionContext;
 import com.threewks.thundr.module.DependencyRegistry;
 import com.threewks.thundr.module.ModuleLoadingException;
@@ -34,7 +35,7 @@ public class HikariModule extends BaseModule {
 	}
 
 	@Override
-	public void start(UpdatableInjectionContext injectionContext) {
+	public void configure(UpdatableInjectionContext injectionContext) {
 		DataSource underlyingDataSource = injectionContext.get(DataSource.class);
 		if (underlyingDataSource == null) {
 			throw new ModuleLoadingException("No %s available - make sure you configure and inject a JDBC %s", DataSource.class.getSimpleName(), DataSource.class.getName());
@@ -50,5 +51,12 @@ public class HikariModule extends BaseModule {
 
 		injectionContext.inject(dataSource).as(HikariDataSource.class);
 		injectionContext.inject(dataSource).as(DataSource.class);
+	}
+
+	@Override
+	public void stop(InjectionContext injectionContext) {
+		super.stop(injectionContext);
+		HikariDataSource hikariDataSource = injectionContext.get(HikariDataSource.class);
+		hikariDataSource.close();
 	}
 }

@@ -18,17 +18,21 @@
 package com.atomicleopard.thundr.jooq;
 
 import java.math.BigInteger;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.jooq.*;
 import org.jooq.conf.Settings;
 import org.jooq.exception.DataAccessException;
 import org.jooq.exception.InvalidResultException;
 import org.jooq.exception.TooManyRowsException;
+import org.jooq.impl.DSL;
 import org.jooq.tools.jdbc.MockCallable;
 import org.jooq.tools.jdbc.MockDataProvider;
 import org.jooq.tools.jdbc.MockRunnable;
@@ -39,6 +43,14 @@ public class Jooq implements DSLContext {
 	public Jooq(DSLContext delegate) {
 		super();
 		this.delegate = delegate;
+	}
+
+	public Jooq(DataSource datasource, SQLDialect sqlDialect) {
+		this(DSL.using(datasource, sqlDialect));
+	}
+
+	public Jooq(Connection connection, SQLDialect sqlDialect) {
+		this(DSL.using(connection, sqlDialect));
 	}
 
 	@Override
