@@ -11,80 +11,78 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.hibernate.Interceptor;
-import org.hibernate.dialect.Dialect;
 
-public class PersistenceUnit {
+/**
+ * Configure Hibernate for use in Thundr
+ */
+
+public class HibernateConfig {
 	protected String name = "default";
 	protected DataSource dataSource;
 	protected Map<String, String> properties = new HashMap<>();
 	protected List<Class<?>> entities = new ArrayList<>();
-	protected Dialect dialect;
 	protected PersistenceUnitTransactionType transactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
 	protected boolean releaseResourcesOnCloseEnabled = false;
 	protected Class<? extends Interceptor> sessionInterceptorClass;
 	protected List<Class<? extends AttributeConverter<?, ?>>> convertors = new ArrayList<>();
 
-	// TODO - Dialect should be totally derivable from all known datasources
-	public PersistenceUnit(DataSource dataSource, Dialect dialect) {
+	//Hibernate resolves Dialect automatically for common databases
+	public HibernateConfig(DataSource dataSource) {
 		super();
 		this.dataSource = dataSource;
-		this.dialect = dialect;
 	}
 
-	public PersistenceUnit withName(String name) {
+	public HibernateConfig withName(String name) {
 		this.name = name;
 		return this;
 	}
 
-	public PersistenceUnit withProperty(String key, String value) {
+	public HibernateConfig withProperty(String key, String value) {
 		this.properties.put(key, value);
 		return this;
 	}
 
-	public PersistenceUnit withProperties(Map<String, String> properties) {
+	public HibernateConfig withProperties(Map<String, String> properties) {
 		this.properties.putAll(properties);
 		return this;
 	}
 
-	public PersistenceUnit withEntity(Class<?> entity) {
+	public HibernateConfig withEntity(Class<?> entity) {
 		this.entities.add(entity);
 		return this;
 	}
 
-	public PersistenceUnit withEntities(Class<?>... entities) {
+	public HibernateConfig withEntities(Class<?>... entities) {
 		this.entities.addAll(Arrays.asList(entities));
 		return this;
 	}
 
-	public PersistenceUnit withTransactionType(PersistenceUnitTransactionType transactionType) {
+	public HibernateConfig withTransactionType(PersistenceUnitTransactionType transactionType) {
 		this.transactionType = transactionType;
 		return this;
 	}
 
-	public PersistenceUnit withConvertor(Class<? extends AttributeConverter<?, ?>> convertor) {
+	public HibernateConfig withConvertor(Class<? extends AttributeConverter<?, ?>> convertor) {
 		this.convertors.add(convertor);
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public PersistenceUnit withConvertors(Class<? extends AttributeConverter<?, ?>>... convertors) {
+	public HibernateConfig withConvertors(Class<? extends AttributeConverter<?, ?>>... convertors) {
 		this.convertors.addAll(Arrays.asList(convertors));
 		return this;
 	}
 
-	public PersistenceUnit withReleaseResourcesOnCloseEnabled(boolean releaseResourcesOnCloseEnabled) {
+	public HibernateConfig withReleaseResourcesOnCloseEnabled(boolean releaseResourcesOnCloseEnabled) {
 		this.releaseResourcesOnCloseEnabled = releaseResourcesOnCloseEnabled;
 		return this;
 	}
 
-	public PersistenceUnit withSessionInterceptorClass(Class<? extends Interceptor> sessionInterceptorClass) {
+	public HibernateConfig withSessionInterceptorClass(Class<? extends Interceptor> sessionInterceptorClass) {
 		this.sessionInterceptorClass = sessionInterceptorClass;
 		return this;
 	}
 
-	public Dialect getDialect() {
-		return dialect;
-	}
 
 	public DataSource getDataSource() {
 		return dataSource;
@@ -117,5 +115,4 @@ public class PersistenceUnit {
 	public List<Class<? extends AttributeConverter<?, ?>>> getAttributeConvertors() {
 		return convertors;
 	}
-
 }
