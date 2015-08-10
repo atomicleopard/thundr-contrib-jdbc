@@ -26,3 +26,4 @@ test-output
 *~
 hs_err*
 hotspot.log
+mem.*

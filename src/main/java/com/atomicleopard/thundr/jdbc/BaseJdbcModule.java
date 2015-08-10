@@ -19,15 +19,26 @@ package com.atomicleopard.thundr.jdbc;
 
 import javax.sql.DataSource;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.threewks.thundr.injection.BaseModule;
 import com.threewks.thundr.injection.UpdatableInjectionContext;
+import com.threewks.thundr.module.DependencyRegistry;
 
-public class MySqlModule extends BaseJdbcModule {
+/**
+ * A common base class for thundr jdbc modules allowing for simple creation.
+ */
+public abstract class BaseJdbcModule extends BaseModule {
+	@Override
+	public void requires(DependencyRegistry dependencyRegistry) {
+		super.requires(dependencyRegistry);
+		dependencyRegistry.addDependency(JdbcModule.class);
+	}
 
 	@Override
-	protected DataSource createDataSource(UpdatableInjectionContext injectionContext, String jdbcUrl) {
-		MysqlDataSource dataSource = new MysqlDataSource();
-		dataSource.setUrl(jdbcUrl);
-		return dataSource;
+	public void initialise(UpdatableInjectionContext injectionContext) {
+		String jdbcUrl = injectionContext.get(String.class, JdbcModule.PropertyJdbcUrl);
+		DataSource dataSource = createDataSource(injectionContext, jdbcUrl);
+		injectionContext.inject(dataSource).as(DataSource.class);
 	}
+
+	protected abstract DataSource createDataSource(UpdatableInjectionContext injectionContext, String jdbcUrl);
 }
